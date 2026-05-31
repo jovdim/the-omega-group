@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Brand palette: navy tuned to the TOG logo, with a refined gold accent */
+  --color-primary: #1e3a5f;        /* deep corporate navy (logo) */
+  --color-primary-dark: #152a45;   /* hover / darker navy */
+  --color-primary-light: #eaf1f8;  /* tints */
+  --color-secondary: #1e293b;
+  --color-accent: #c9a227;         /* muted gold, premium finance accent */
+  --color-accent-dark: #a8861d;
+  --color-dark: #0f1d2e;           /* very dark navy (footer / hero overlay) */
+  --color-light: #f8fafc;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-white: #ffffff;
+
+  --font-heading: var(--font-space-grotesk);
+  --font-body: var(--font-dm-sans);
+}
+
+:root {
+  --font-space-grotesk: "Space Grotesk", system-ui, sans-serif;
+  --font-dm-sans: "DM Sans", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-dm-sans);
+  color: var(--color-secondary);
+  background-color: var(--color-white);
+  /* subtle grid texture, like the reference */
+  background-image: url("data:image/svg+xml,%3Csvg width='64' height='64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h64v64H0z' fill='none' stroke='%23000' stroke-opacity='0.018' stroke-width='0.7'/%3E%3C/svg%3E");
+  background-size: 64px 64px;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-space-grotesk);
+}
+
+/* ---- Grid background textures (consistent across all sections) ---- */
+.bg-grid-light {
+  background-color: #f5f7fa;
+  background-image: url("data:image/svg+xml,%3Csvg width='64' height='64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h64v64H0z' fill='none' stroke='%23000' stroke-opacity='0.018' stroke-width='0.7'/%3E%3C/svg%3E");
+  background-size: 64px 64px;
+}
+.bg-grid-white {
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg width='64' height='64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h64v64H0z' fill='none' stroke='%23000' stroke-opacity='0.018' stroke-width='0.7'/%3E%3C/svg%3E");
+  background-size: 64px 64px;
+}
+.bg-grid-dark {
+  background-color: var(--color-dark);
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h60v60H0z' fill='none' stroke='%23fff' stroke-opacity='0.06' stroke-width='0.8'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+}
+/* grid overlay for sections that sit on top of an image (hero) */
+.grid-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h60v60H0z' fill='none' stroke='%23fff' stroke-opacity='0.07' stroke-width='0.8'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-light); }
+::-webkit-scrollbar-thumb { background: var(--color-muted); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-secondary); }
+
+/* ---- Scroll-triggered reveal ---- */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+.animate-on-scroll.from-left { transform: translateX(-40px); }
+.animate-on-scroll.from-left.visible { transform: translateX(0); }
+.animate-on-scroll.from-right { transform: translateX(40px); }
+.animate-on-scroll.from-right.visible { transform: translateX(0); }
+.animate-on-scroll.scale-up { transform: scale(0.92); }
+.animate-on-scroll.scale-up.visible { transform: scale(1); }
+
+/* Stagger children */
+.stagger-children .animate-on-scroll:nth-child(1) { transition-delay: 0.05s; }
+.stagger-children .animate-on-scroll:nth-child(2) { transition-delay: 0.1s; }
+.stagger-children .animate-on-scroll:nth-child(3) { transition-delay: 0.15s; }
+.stagger-children .animate-on-scroll:nth-child(4) { transition-delay: 0.2s; }
+.stagger-children .animate-on-scroll:nth-child(5) { transition-delay: 0.25s; }
+.stagger-children .animate-on-scroll:nth-child(6) { transition-delay: 0.3s; }
+
+/* ---- Hero entrance ---- */
+@keyframes heroZoom { from { transform: scale(1.08); } to { transform: scale(1); } }
+@keyframes heroFadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+.hero-bg-zoom { animation: heroZoom 4s ease-out forwards; }
+.hero-fade-1 { opacity: 0; animation: heroFadeUp 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards; }
+.hero-fade-2 { opacity: 0; animation: heroFadeUp 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards; }
+.hero-fade-3 { opacity: 0; animation: heroFadeUp 1s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards; }
+
+/* ---- Decorative line-art draw ---- */
+@keyframes lineDraw { from { stroke-dashoffset: 2000; } to { stroke-dashoffset: 0; } }
+.line-1 { stroke-dasharray: 2000; stroke-dashoffset: 2000; animation: lineDraw 2.4s cubic-bezier(0.25,0.1,0.25,1) 0.8s forwards; }
+.line-2 { stroke-dasharray: 2000; stroke-dashoffset: 2000; animation: lineDraw 2.4s cubic-bezier(0.25,0.1,0.25,1) 1.3s forwards; }
+.line-3 { stroke-dasharray: 2000; stroke-dashoffset: 2000; animation: lineDraw 2.4s cubic-bezier(0.25,0.1,0.25,1) 1.8s forwards; }
+
+/* ---- Hero orbital network ---- */
+@keyframes orbitSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes orbitSpinRev { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+@keyframes nodeGlow { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.9; } }
+@keyframes nodeFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes ringFade { from { opacity: 0; } to { opacity: 1; } }
+
+.orbit-ring { transform-box: fill-box; transform-origin: center; opacity: 0; animation: ringFade 1.4s ease-out 0.3s forwards; }
+.orbit-spin-1 { animation: ringFade 1.4s ease-out 0.3s forwards, orbitSpin 70s linear infinite; }
+.orbit-spin-2 { animation: ringFade 1.4s ease-out 0.5s forwards, orbitSpinRev 52s linear infinite; }
+.orbit-spin-3 { animation: ringFade 1.4s ease-out 0.7s forwards, orbitSpin 90s linear infinite; }
+.hero-node { transform-box: fill-box; transform-origin: center; }
+.hero-node.glow { animation: nodeGlow 4.5s ease-in-out infinite, nodeFloat 7s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-on-scroll,
+  .hero-fade-1, .hero-fade-2, .hero-fade-3,
+  .line-1, .line-2, .line-3,
+  .orbit-ring, .orbit-spin-1, .orbit-spin-2, .orbit-spin-3,
+  .hero-node, .hero-node.glow {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+  .hero-bg-zoom { animation: none !important; }
+}
