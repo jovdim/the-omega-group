@@ -1,77 +1,68 @@
-# Tomegag landing page — build & deploy
+# The Omega Group — deploy guide (Vercel)
 
-Astro static site + a small PHP handler (`send.php`) that emails contact-form
-submissions to your inbox through Hostinger SMTP. No third-party service.
+Astro static site + a serverless function (`/api/contact`) that emails contact-form
+submissions to your inbox using **Nodemailer + your Hostinger SMTP**. No third party.
 
-## 1. Add the email password (one time)
+## How the contact form works
 
-Open `public/config.php` and replace:
-
-```php
-'SMTP_PASS' => 'PUT_THE_PASSWORD_HERE',
+```
+Visitor submits form  →  POST /api/contact (Vercel serverless function)
+                      →  Nodemailer connects to smtp.hostinger.com (admin@tomegag.com)
+                      →  email lands in your inbox
 ```
 
-with the real password for `admin@tomegag.com`.
+The homepage is static (fast, free). Only the form submission runs the function.
 
-> The password lives only in this PHP file on the server. PHP is executed, not
-> served as text, so visitors can never see it. `public/config.php` is also
-> git-ignored so it won't end up in a repo.
+## Environment variables (the email credentials)
 
-## 2. Run locally (optional)
+These live in Vercel, NOT in the code. Locally they're in `.env` (git-ignored).
+
+| Variable | Value |
+|---|---|
+| `SMTP_HOST` | `smtp.hostinger.com` |
+| `SMTP_PORT` | `465` (or `587` if 465 is blocked) |
+| `SMTP_USER` | `admin@tomegag.com` |
+| `SMTP_PASS` | (the mailbox password) |
+| `MAIL_TO`  | `admin@tomegag.com` |
+
+## Deploy — option A: Vercel website (easiest)
+
+1. Push this project to a GitHub repo.
+2. Go to **vercel.com** → sign up (free) → **Add New → Project** → import the repo.
+3. Vercel auto-detects Astro. Before deploying, open **Environment Variables**
+   and add the 5 variables from the table above.
+4. Click **Deploy**. Done — you get a free `*.vercel.app` URL.
+
+## Deploy — option B: Vercel CLI
 
 ```bash
-npm install      # first time only
-npm run dev      # preview at http://localhost:4321
+npm i -g vercel
+vercel            # links/creates the project (follow prompts)
+# add the secrets:
+vercel env add SMTP_HOST
+vercel env add SMTP_PORT
+vercel env add SMTP_USER
+vercel env add SMTP_PASS
+vercel env add MAIL_TO
+vercel --prod     # deploy to production
 ```
 
-Note: `npm run dev` shows the page, but the **form won't actually send** locally
-because there's no PHP server here. Email sending only works once deployed to
-Hostinger (which runs PHP). To test the form, deploy first (step 3–4).
+## Connect your Hostinger domain (tomegag.com)
 
-## 3. Build
+1. In Vercel: **Project → Settings → Domains → Add** `tomegag.com`.
+2. Vercel shows you DNS records (an A record / CNAME).
+3. In Hostinger **hPanel → Domains → DNS**, add those records.
+4. Wait for DNS to propagate (minutes to a couple hours). HTTPS is automatic.
+5. Update `site` in `astro.config.mjs` to your final domain if different.
 
-```bash
-npm run build
-```
+## Test after deploying
 
-This creates a `dist/` folder containing everything to upload:
-
-```
-dist/
-├─ index.html          # the landing page
-├─ send.php            # contact form handler
-├─ config.php          # your SMTP credentials
-├─ PHPMailer/          # the email library
-└─ favicon.*
-```
-
-## 4. Upload to Hostinger
-
-1. Log in to **hPanel → Files → File Manager** (or use FTP).
-2. Go to the **`public_html`** folder of your domain.
-3. Upload the **contents of `dist/`** into `public_html`
-   (so `index.html`, `send.php`, `config.php`, and `PHPMailer/` sit directly
-   inside `public_html`).
-4. Visit your site and submit the contact form — the message should arrive at
-   `admin@tomegag.com`.
+Submit the contact form on the live site. You should receive the email at
+`admin@tomegag.com`. Hitting **Reply** answers the visitor (their address is the Reply-To).
 
 ## Troubleshooting
 
-- **Email not arriving / "something went wrong":**
-  - Double-check the password in `config.php`.
-  - In `config.php`, if port `465` doesn't work, switch to:
-    `'SMTP_PORT' => 587,` and `'SMTP_SECURE' => 'tls',`.
-  - Confirm SMTP host in hPanel → Emails → **Connect Devices/Apps**
-    (usually `smtp.hostinger.com`).
-- **Check the spam folder** the first time.
-- **PHP version:** Hostinger uses PHP 7.4+ by default, which PHPMailer supports.
-
-## How it works
-
-```
-Visitor fills form  →  POST to /send.php  →  PHPMailer connects to
-smtp.hostinger.com (login: admin@tomegag.com)  →  email lands in your inbox.
-```
-
-Hitting **Reply** on the email replies straight to the visitor (their address is
-set as Reply-To). A hidden "honeypot" field quietly blocks most spam bots.
+- **Email not arriving:** double-check the env vars in Vercel (especially `SMTP_PASS`).
+  If port `465` fails, set `SMTP_PORT=587`.
+- **Check spam** the first time.
+- A hidden honeypot field silently blocks most spam bots.

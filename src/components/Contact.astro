@@ -123,7 +123,7 @@ const contactInfo = [
     button.textContent = "Sending…";
 
     try {
-      const res = await fetch("/send.php", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         body: new FormData(form),
         headers: { Accept: "application/json" },

@@ -9,11 +9,18 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "deploy": "astro build && wrangler pages deploy dist --project-name=the-omega-group"
   },
   "dependencies": {
+    "@astrojs/vercel": "^10.0.8",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^6.4.2",
+    "nodemailer": "^8.0.10",
     "tailwindcss": "^4.3.0"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^8.0.0",
+    "wrangler": "^4.95.0"
   }
 }
